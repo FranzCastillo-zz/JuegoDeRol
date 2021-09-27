@@ -1,14 +1,14 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-
 public class Controlador {
     private Vista v;
     private ArrayList<Enemigo> enemigos;
     private Jugador jugador;
     private ArrayList<Items> items;
-    private int ronda = 1;
-    private int oleada = 1;
+    private ArrayList<String> historial;
+    private String ultimoTurno;
+    private int turno = 1;
     
     private static int randomIntEntre(int min, int max) {
         Random rand = new Random();
@@ -27,20 +27,33 @@ public class Controlador {
         int i = 1;
         if(probabilidadJefe <= 15){
             v.jefeAparece();
-            int vidaJefe = randomIntEntre(200, 300);
-            int ataqueJefe = randomIntEntre(20, 25);
-            enemigos.add(new Jefe("El Patron", vidaJefe, ataqueJefe));
+            int tipoJefe = randomIntEntre(0, 100);
+            String claseJefe;
+            if(tipoJefe > 50){
+                claseJefe = "El Patron";
+            }else{
+                claseJefe = "La Comadre";
+            }
+            int vidaJefe = 200;
+            int ataqueJefe = randomIntEntre(20, 30);
+            enemigos.add(new Jefe(claseJefe, vidaJefe, ataqueJefe));
             i++;
         }
         while(i <= numEnemigos){
+            int tipoEnemigo = randomIntEntre(0, 100);
+            String nombre;
+            if(tipoEnemigo < 50){
+                nombre = "K-70";
+            }else{
+                nombre = "Chorizo";
+            }
             int vidaEnemigo = randomIntEntre(50, 150);
             int ataqueEnemigo = randomIntEntre(5, 15);
-            enemigos.add(new Enemigo("Enemigo " + i, vidaEnemigo, ataqueEnemigo));
+            enemigos.add(new Enemigo(nombre, vidaEnemigo, ataqueEnemigo));
             i++;
         }
     }
-
-    private void atacar(){
+    private void atacarJugador(){
         int numObjetivo = -1;
         boolean objetivoValido = false;
         while(!objetivoValido){
@@ -55,14 +68,32 @@ public class Controlador {
         int ataque = jugador.getAtaque();
         jugador.atacar(objetivo, ataque);
         v.mostrarRecibioDanio(objetivo, ataque);
+        ultimoTurno += "| " + jugador.getNombre() + " -ATK> " + objetivo.getNombre() + " | ";
         if(objetivo.getVida() <= 0){ //Se muere
             enemigos.remove(numObjetivo);
             v.mostrarMuerte(objetivo.getMuerte());
+            ultimoTurno += "| " + jugador.getNombre() + " -KILL> " + objetivo.getNombre() + " | ";
         }
     }
-    
+    private void usarItem(){
+        boolean opcionValida = false;
+        while(!opcionValida){
+            items = jugador.getInventario();
+            int posItem = v.mostrarMenuItems(items) - 1; //Devuelve una posicion adelante
+            if(posItem >= 0 && posItem <= items.size()){
+                Items paraUsar = items.get(posItem);
+                v.mostrarItemUsado(jugador.usarItem(paraUsar));
+                items.remove(paraUsar);
+                ultimoTurno += "| " + jugador.getNombre() + " -ITEM> " + jugador.getEfecto() + " | ";
+                opcionValida = true;
+            }else{
+                v.opcionInvalida();
+            }
+        }
+    }
     private void jugarRonda(){
-        v.inicioRonda(ronda, oleada);
+        ultimoTurno = "";
+        v.inicioTurno(turno);
         mostrarEnemigos();
         v.mostrarElTurnoDe(jugador);
         v.mostrarEstadisticasJugador(jugador);
@@ -72,38 +103,85 @@ public class Controlador {
             int opcion = v.mostrarMenuJugador();
             switch(opcion){
                 case 1: // ATACAR
-                    atacar();
+                    atacarJugador();
+                    if(jugador.getEfecto().equals("Doble Ataque")){
+                        atacarJugador();
+                    }
                     opcionValida = true;
                 break;
-                case 2: // VER ITEMS
-                
-                opcionValida = true;
+                case 2: // USAR ITEM
+                    if(jugador.getEfecto().equals("")){
+                        usarItem();
+                        opcionValida = true;
+                    }else{
+                        v.mostrarItemActivo();
+                    }
                 break;
-                case 3: // USAR ITEM
-                
-                opcionValida = true;
+                case 3: // SALTAR TURNO
+                    v.mostrarSaltarTurno(turno);
+                    opcionValida = true;
                 break;
-                case 4: // SALTAR TURNO
-                
-                opcionValida = true;
-                break;
-                case 5: // SALIR
+                case 4: // SALIR
                     System.exit(1);
-                    opcionValida = true;
                 break;
                 default:
                     v.opcionInvalida();
                 break;
             }
         }
-
         //TURNO DE LOS ENEMIGOS
-
+        for (Enemigo enemigo : enemigos) {
+            v.mostrarElTurnoDe(enemigo);
+            boolean opcionValidaEnemigo = false;
+            while(!opcionValidaEnemigo){
+                int opcion = v.mostrarMenuEnemigo();
+                switch(opcion){
+                    case 1: //Atacar
+                        int cantidad = enemigo.getAtaque();
+                        if(!jugador.getEfecto().equals("Alas de esquive")){
+                            enemigo.atacar(jugador, cantidad);
+                            if(jugador.getVida() > 0){
+                                ultimoTurno += "| " + enemigo.getNombre() + " -ATK> " + jugador.getNombre() + " | ";
+                            }else{
+                                ultimoTurno += "| " + enemigo.getNombre() + " -KILL> " + jugador.getNombre() + " | ";
+                            }
+                            v.mostrarRecibioDanio(jugador, cantidad);
+                        }else{
+                            v.mostrarEsquivado();
+                            jugador.setEfecto("");
+                        }
+                        opcionValidaEnemigo = true;
+                    break;
+                    case 2: //Habilidad
+                    break;
+                    case 3: //Saltar
+                        v.mostrarSaltarTurno(turno);
+                        opcionValidaEnemigo = true;
+                    break;
+                    case 4: //Salir
+                        System.exit(1);
+                    break;
+                    default:
+                        v.opcionInvalida();
+                    break;
+                }
+            }
+        }
         //Fin de ronda
-        ronda++;
+        for(int i = 0; i < historial.size(); i++){
+            if(i <= 1){
+                historial.set(i, historial.get(i + 1));
+            }else if(i == 2){
+                historial.set(2, ultimoTurno);
+            }
+        }
+        turno++;
     }
-
     public void ejecutar(){
+        historial = new ArrayList<>();
+        historial.add("");
+        historial.add("");
+        historial.add("");
         v = new Vista();
         enemigos = new ArrayList<>();
         v.inicio();
@@ -126,12 +204,15 @@ public class Controlador {
         v.mostrarPersonajeCreado(nombre);
         crearNuevosEnemigos();
         do{
-            if(enemigos.isEmpty()){
-                crearNuevosEnemigos();
-                v.mostrarSiguienteOleada(oleada);
-                oleada++;
-            }
             jugarRonda();
-        }while(jugador.getVida() > 0);
+            v.mostrarHistorial(historial);
+        }while(jugador.getVida() > 0 && !enemigos.isEmpty());
+
+        if(jugador.getVida() <= 0){
+            jugador.getMuerte();
+        }else{
+            v.mostrarNoMasEnemigos();
+        }
+        v.mostrarGG(turno);
     }
 }

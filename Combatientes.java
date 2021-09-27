@@ -75,7 +75,10 @@ public class Combatientes {
     public void subirVida(int cantidad){
         this.vida += cantidad;
     }
-    public void recibirEfecto(String efecto){
+    public void setEfecto(String efecto){
         this.efecto = efecto;
+    }
+    public String getEfecto(){
+        return this.efecto;
     }
 }

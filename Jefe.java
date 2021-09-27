@@ -1,10 +1,14 @@
 public class Jefe extends Enemigo{
-    private final double reduccionDanio = 0.5;
     private String nombreHabilidadJefe;
     public Jefe(String nombre, int vida, int ataque){
         super(nombre, vida, ataque);
+        if(nombre.equals("El Patron")){ //El Patron Jefe de K-70
+            this.nombreHabilidadJefe = "Aturdir";
+        }else if(nombre.equals("Chorizo")){ //La comadre Jefe de Chorizo
+            this.nombreHabilidadJefe = "Autocuracion";
+        }
     }
-    public void ataqueJefe(Jugador objetivo){
-        
+    public String getHabilidad(){
+        return this.nombreHabilidadJefe;
     }
 }

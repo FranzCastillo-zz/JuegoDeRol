@@ -32,8 +32,8 @@ public class Vista {
     public void opcionInvalida(){
         prnt("Ha ingresado una opcion no valida, escoga una de las opciones provistas");
     }
-    public void inicioRonda(int numero, int oleada){
-        prnt("Narrador: Demos inicio a la ronda " + numero + ", oleada "+ oleada +"! ");
+    public void inicioTurno(int turno){
+        prnt("Turno " + turno + "!");
     }
     public void enemigosCreados(int cantidad){
         prnt("Apareceran " + cantidad + " enemigos esta ronda.");
@@ -57,10 +57,9 @@ public class Vista {
         try{
             prnt("\nQue deseas hacer?\n");
             prnt("1. Atacar");
-            prnt("2. Ver items");
-            prnt("3. Usar item");
-            prnt("4. Saltar turno");
-            prnt("5. Salir");
+            prnt("2. Usar item");
+            prnt("3. Saltar turno");
+            prnt("4. Salir");
 
             int temp = scan.nextInt();
             scan.nextLine();
@@ -85,7 +84,6 @@ public class Vista {
             scan.next();
             return -1;
         }
-        
     }
     public void mostrarRecibioDanio(Combatientes c, int cantidad){
         prnt(c.getNombre() + " ha recibido " + cantidad + "pts de daño!");
@@ -93,7 +91,59 @@ public class Vista {
     public void mostrarMuerte(String texto){
         prnt(texto);
     }
-    public void mostrarSiguienteOleada(int oleada){
-        prnt("Narrador: Haz acabado con la oleada " + oleada + "... Impresionante... Por la siguiente");
+    public void mostrarSaltarTurno(int turno){
+        prnt("Te haz saltado el turno " + turno);
+    }
+    public void mostrarNoMasEnemigos(){
+        prnt("HAZ ACABADO CON TODOS LOS ENEMIGOS TRAS ESE ULTIMO GOLPE! Muy bien");
+    }
+    public void mostrarGG(int turnos){
+        prnt("Haz terminado el combate tras " + turnos + " turnos");
+    }
+    public int mostrarMenuEnemigo(){
+        try{
+            prnt("\nQue desea hacer?");
+            prnt("1. Atacar jugador");
+            prnt("2. Atacar jugador con habilidad especial");
+            prnt("3. Saltar Turno");
+            prnt("4. Salir");
+            int temp = scan.nextInt();
+            scan.nextLine();
+            return temp;
+        }catch(Exception e){
+            scan.next();
+            return -1;
+        }
+    }
+    public void mostrarHistorial(ArrayList<String> historial){
+        prnt("Los ultimos movimientos han sido:");
+        for (String string : historial) {
+            prnt("-" + string);
+        }
+    }
+    public int mostrarMenuItems(ArrayList<Items> inventario){
+        try{
+            prnt("\nQue item deseas usar? (Ingresa el numero)\n");
+            int i = 1;
+            for (Items item : inventario) {
+                prnt(i + ". " + item.getNombre());
+                i++;
+            }
+            int temp = scan.nextInt();
+            scan.nextLine();
+            return temp;
+        }catch(Exception e){
+            scan.next();
+            return -1;
+        }
+    }
+    public void mostrarItemUsado(String texto){
+        prnt(texto);
+    }
+    public void mostrarEsquivado(){
+        prnt("EL ATAQUE HA SIDO ESQUIVADO");
+    }
+    public void mostrarItemActivo(){
+        prnt("Ya se encuentra un item activo");
     }
 }
