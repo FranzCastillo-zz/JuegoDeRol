@@ -59,7 +59,7 @@ public class Combatientes {
      * @param cantidad Cuanto se bajara a objetivo
      */
     public void atacar(Combatientes objetivo, int cantidad){ //PENDIENTE
-
+        objetivo.bajarVida(cantidad);
     }
     
     /** 

@@ -8,13 +8,19 @@ public class Controlador {
     private Jugador jugador;
     private ArrayList<Items> items;
     private int ronda = 1;
+    private int oleada = 1;
     
     private static int randomIntEntre(int min, int max) {
         Random rand = new Random();
 		return rand.nextInt((max - min) + 1) + min;
 	}
     
-    private void iniciarRonda(){
+    private void mostrarEnemigos(){
+        for (Enemigo enemigo : enemigos) {
+            v.mostrarEstadisticas(enemigo);
+        }
+    }
+    private void crearNuevosEnemigos(){
         int numEnemigos = randomIntEntre(1, 3);
         int probabilidadJefe = randomIntEntre(1, 100);
         v.enemigosCreados(numEnemigos);
@@ -32,14 +38,69 @@ public class Controlador {
             enemigos.add(new Enemigo("Enemigo " + i, vidaEnemigo, ataqueEnemigo));
             i++;
         }
-        for (Enemigo enemigo : enemigos) {
-            v.mostrarEstadisticas(enemigo);
-        }
-        v.mostrarEstadisticasJugador(jugador);
     }
 
+    private void atacar(){
+        int numObjetivo = -1;
+        boolean objetivoValido = false;
+        while(!objetivoValido){
+            numObjetivo = v.pedirObjetivo(enemigos) - 1; // Devuelve una posicion adelante
+            if(numObjetivo >= 0 && numObjetivo < enemigos.size()){
+                objetivoValido = true;
+            }else{
+                v.opcionInvalida();
+            }
+        }
+        Enemigo objetivo = enemigos.get(numObjetivo); 
+        int ataque = jugador.getAtaque();
+        jugador.atacar(objetivo, ataque);
+        v.mostrarRecibioDanio(objetivo, ataque);
+        if(objetivo.getVida() <= 0){ //Se muere
+            enemigos.remove(numObjetivo);
+            v.mostrarMuerte(objetivo.getMuerte());
+        }
+    }
+    
     private void jugarRonda(){
+        v.inicioRonda(ronda, oleada);
+        mostrarEnemigos();
+        v.mostrarElTurnoDe(jugador);
+        v.mostrarEstadisticasJugador(jugador);
+        // TURNO DEL JUGADOR
+        boolean opcionValida = false;
+        while(!opcionValida){
+            int opcion = v.mostrarMenuJugador();
+            switch(opcion){
+                case 1: // ATACAR
+                    atacar();
+                    opcionValida = true;
+                break;
+                case 2: // VER ITEMS
+                
+                opcionValida = true;
+                break;
+                case 3: // USAR ITEM
+                
+                opcionValida = true;
+                break;
+                case 4: // SALTAR TURNO
+                
+                opcionValida = true;
+                break;
+                case 5: // SALIR
+                    System.exit(1);
+                    opcionValida = true;
+                break;
+                default:
+                    v.opcionInvalida();
+                break;
+            }
+        }
 
+        //TURNO DE LOS ENEMIGOS
+
+        //Fin de ronda
+        ronda++;
     }
 
     public void ejecutar(){
@@ -58,14 +119,19 @@ public class Controlador {
                 clase = "EXPLORADOR";
                 claseValida = true;
             }else{
-                v.claseInvalida();
+                v.opcionInvalida();
             }
         }
         jugador = new Jugador(nombre, 150, 15, clase);
         v.mostrarPersonajeCreado(nombre);
-        v.inicioRonda(ronda);
-        iniciarRonda();
-        v.mostrarEstadisticasJugador(jugador);
-        jugarRonda();
+        crearNuevosEnemigos();
+        do{
+            if(enemigos.isEmpty()){
+                crearNuevosEnemigos();
+                v.mostrarSiguienteOleada(oleada);
+                oleada++;
+            }
+            jugarRonda();
+        }while(jugador.getVida() > 0);
     }
 }

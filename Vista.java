@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 public class Vista {
     Scanner scan;
@@ -28,11 +29,11 @@ public class Vista {
             return -1;
         }
     }
-    public void claseInvalida(){
-        prnt("Ha ingresado una clase no valida, escoga una de las opciones provistas");
+    public void opcionInvalida(){
+        prnt("Ha ingresado una opcion no valida, escoga una de las opciones provistas");
     }
-    public void inicioRonda(int numero){
-        prnt("Narrador: Demos inicio a la ronda " + numero + "!");
+    public void inicioRonda(int numero, int oleada){
+        prnt("Narrador: Demos inicio a la ronda " + numero + ", oleada "+ oleada +"! ");
     }
     public void enemigosCreados(int cantidad){
         prnt("Apareceran " + cantidad + " enemigos esta ronda.");
@@ -54,6 +55,12 @@ public class Vista {
     }
     public int mostrarMenuJugador(){
         try{
+            prnt("\nQue deseas hacer?\n");
+            prnt("1. Atacar");
+            prnt("2. Ver items");
+            prnt("3. Usar item");
+            prnt("4. Saltar turno");
+            prnt("5. Salir");
 
             int temp = scan.nextInt();
             scan.nextLine();
@@ -62,5 +69,31 @@ public class Vista {
             scan.next();
             return -1;
         }
+    }
+    public int pedirObjetivo(ArrayList<Enemigo> arregloEnemigos){
+        try{
+            prnt("\nA quien deseas atacar? (Ingresa el numero)\n");
+            int i = 1;
+            for (Enemigo enemigo : arregloEnemigos) {
+                prnt(i + ". " + enemigo.getNombre());
+                i++;
+            }
+            int temp = scan.nextInt();
+            scan.nextLine();
+            return temp;
+        }catch(Exception e){
+            scan.next();
+            return -1;
+        }
+        
+    }
+    public void mostrarRecibioDanio(Combatientes c, int cantidad){
+        prnt(c.getNombre() + " ha recibido " + cantidad + "pts de daño!");
+    }
+    public void mostrarMuerte(String texto){
+        prnt(texto);
+    }
+    public void mostrarSiguienteOleada(int oleada){
+        prnt("Narrador: Haz acabado con la oleada " + oleada + "... Impresionante... Por la siguiente");
     }
 }
