@@ -1,3 +1,9 @@
+/*
+    Controlador.java
+    NOMBRE: Francisco Castillo 21562
+    Controlador basado en moledo MVC
+*/
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -10,6 +16,12 @@ public class Controlador {
     private String ultimoTurno;
     private int turno = 1;
     
+    
+    /** 
+     * @param min rango inferior
+     * @param max rango superior
+     * @return int numero aleatorio
+     */
     private static int randomIntEntre(int min, int max) {
         Random rand = new Random();
 		return rand.nextInt((max - min) + 1) + min;
@@ -25,7 +37,7 @@ public class Controlador {
         int probabilidadJefe = randomIntEntre(1, 100);
         v.enemigosCreados(numEnemigos);
         int i = 1;
-        if(probabilidadJefe <= 25){
+        if(probabilidadJefe <= 25){ //COLOCA A PROBABILIDAD LA APARICION DE UN JEFE ENTRE LOS ENEMIGOS
             v.jefeAparece();
             int tipoJefe = randomIntEntre(0, 100);
             String claseJefe;
@@ -58,7 +70,7 @@ public class Controlador {
     }
     private void atacarJugador(){
         if(jugador.getVida() > 0){
-            if(!jugador.getEfectoContrario().equals("Aturdir")){
+            if(!jugador.getEfectoContrario().equals("Aturdir")){ //SI ESTA ATURDIDO NO ATACA
                 int numObjetivo = -1;
                 boolean objetivoValido = false;
                 while(!objetivoValido){
@@ -103,6 +115,10 @@ public class Controlador {
             }
         }
     }
+    
+    /** 
+     * @param enemigo quien dirije el ataque al Jugador
+     */
     private void atacarEnemigo(Enemigo enemigo){
         int cantidad = enemigo.getAtaque();
         if(!jugador.getEfecto().equals("Alas de esquive")){
@@ -119,6 +135,10 @@ public class Controlador {
             jugador.setEfecto("");
         }
     }
+    
+    /** 
+     * @param enemigo quien dirije el ataque al jugador
+     */
     private void atacarEspecialEnemigo(Enemigo enemigo){
         String efecto = jugador.getEfectoContrario();
         if(efecto.equals("")){ //Si no se encuentra ya afectado por una habilidad
@@ -143,6 +163,10 @@ public class Controlador {
             v.mostrarYaHayEfecto();
         }
     }
+    
+    /** 
+     * @param enemigo quien dirije el ataque al jugador
+     */
     private void atacarEspecialJefe(Jefe enemigo){
         String efecto = jugador.getEfectoContrario();
         if(efecto.equals("")){ //Si no se encuentra ya afectado por una habilidad
@@ -292,6 +316,8 @@ public class Controlador {
         }
         turno++;
     }
+    
+    //MAIN PART
     public void ejecutar(){
         historial = new ArrayList<>();
         historial.add("");

@@ -1,3 +1,9 @@
+/*
+    Jugador.java
+    NOMBRE: Francisco Castillo 21562
+    Modelo de Jugador que hereda de Combatientes
+*/
+
 import java.util.ArrayList;
 
 public class Jugador extends Combatientes {
@@ -26,17 +32,34 @@ public class Jugador extends Combatientes {
         }
         efectoContrario = "";
     }
+    
+    /** 
+     * @param item a utilizar
+     * @return String el efecto
+     */
     public String usarItem(Items item){
         return item.usarItem(this);
     }
     
+    
+    /** 
+     * @return ArrayList<Items> la lista de items disponibles
+     */
     public ArrayList<Items> getInventario(){
         return inventario;
     }
+    
+    /** 
+     * @return String la clase del jugador
+     */
     public String getClase(){
         return this.clase;
     }
 
+    
+    /** 
+     * @return String el texto a mostrar segund el efecto
+     */
     public String checarEfecto(){
         String resultado = "";
         if(this.efectoContrario != null){
@@ -56,9 +79,17 @@ public class Jugador extends Combatientes {
         }
         return resultado;
     }
+    
+    /** 
+     * @param nuevoEfecto a colocar al recibir una habilidad
+     */
     public void setEfectoContrario(String nuevoEfecto){
         this.efectoContrario = nuevoEfecto;
     }
+    
+    /** 
+     * @return String el efecto actual
+     */
     public String getEfectoContrario(){
         return this.efectoContrario;
     }

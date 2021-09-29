@@ -1,3 +1,9 @@
+/*
+    Enemigo.java
+    NOMBRE: Francisco Castillo 21562
+    Modelo de enemigo que hereda de Combatientes
+*/
+
 public class Enemigo extends Combatientes{
     private String nombreHabilidad;
     private String nombreHabilidadJefe;
@@ -12,15 +18,31 @@ public class Enemigo extends Combatientes{
         this.nombreHabilidadJefe = "";
         this.nombreHabilidadJefe = "";
     }
+    
+    /** 
+     * @param nombre de la habilidad
+     */
     protected void setHabilidadJefe(String nombre){
         this.nombreHabilidadJefe = nombre;
     }
+    
+    /** 
+     * @return String nombre de la habilidad
+     */
     public String getNombreHabilidad(){
         return this.nombreHabilidad;
     }
-    public void ataqueEspecial(Jugador objetivo){ //PENDIENTE
+    
+    /** 
+     * @param objetivo a quien se atacara con el ataque especial
+     */
+    public void ataqueEspecial(Jugador objetivo){
         objetivo.setEfectoContrario(this.nombreHabilidad);
     }
+    
+    /** 
+     * @param objetivo a quien se atacara con el ataque del jefe
+     */
     public void ataqueJefe(Jugador objetivo){
         objetivo.setEfectoContrario(this.nombreHabilidadJefe);
     }

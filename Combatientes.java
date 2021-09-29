@@ -1,3 +1,9 @@
+/*
+    Combatientes.java
+    NOMBRE: Francisco Castillo 21562
+    Clase madre para enemigo, jefe y jugador
+*/
+
 public class Combatientes {
     protected String nombre;
     protected int vida;
@@ -46,9 +52,17 @@ public class Combatientes {
         return this.nombre;
     }
 
+    
+    /** 
+     * @return int
+     */
     public int getVida(){
         return this.vida;
     }
+    
+    /** 
+     * @return int
+     */
     public int getAtaque(){
         return this.ataque;
     }
@@ -74,9 +88,17 @@ public class Combatientes {
     public void subirVida(int cantidad){
         this.vida += cantidad;
     }
+    
+    /** 
+     * @param efecto el efecto que se coloca en this
+     */
     public void setEfecto(String efecto){
         this.efecto = efecto;
     }
+    
+    /** 
+     * @return String el efecto que se tiene actualmente
+     */
     public String getEfecto(){
         return this.efecto;
     }

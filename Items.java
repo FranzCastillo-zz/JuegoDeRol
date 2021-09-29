@@ -1,12 +1,27 @@
+/*
+    Items.java
+    NOMBRE: Francisco Castillo 21562
+    Modelo de items
+*/
+
 public class Items {
     private String nombre;
 
     public Items(String nombre){
         this.nombre = nombre;
     }
+    
+    /** 
+     * @return String el nombre del item
+     */
     public String getNombre(){
         return this.nombre;
     }
+    
+    /** 
+     * @param j La instancia del jugador
+     * @return String el efecto
+     */
     public String usarItem(Jugador j){
         String name = this.nombre;
         String efecto = "";
