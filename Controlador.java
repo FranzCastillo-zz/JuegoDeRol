@@ -25,7 +25,7 @@ public class Controlador {
         int probabilidadJefe = randomIntEntre(1, 100);
         v.enemigosCreados(numEnemigos);
         int i = 1;
-        if(probabilidadJefe <= 15){
+        if(probabilidadJefe <= 25){
             v.jefeAparece();
             int tipoJefe = randomIntEntre(0, 100);
             String claseJefe;
@@ -34,8 +34,8 @@ public class Controlador {
             }else{
                 claseJefe = "La Comadre";
             }
-            int vidaJefe = 200;
-            int ataqueJefe = randomIntEntre(20, 30);
+            int vidaJefe = 250;
+            int ataqueJefe = randomIntEntre(25, 35);
             enemigos.add(new Jefe(claseJefe, vidaJefe, ataqueJefe));
             i++;
         }
@@ -47,32 +47,44 @@ public class Controlador {
             }else{
                 nombre = "Chorizo";
             }
-            int vidaEnemigo = randomIntEntre(50, 150);
-            int ataqueEnemigo = randomIntEntre(5, 15);
+            int vidaEnemigo = randomIntEntre(75, 100);
+            int ataqueEnemigo = randomIntEntre(10, 25);
             enemigos.add(new Enemigo(nombre, vidaEnemigo, ataqueEnemigo));
             i++;
         }
+        for (Enemigo enemigo : enemigos) {
+            v.mostrarSaludo(enemigo);
+        }
     }
     private void atacarJugador(){
-        int numObjetivo = -1;
-        boolean objetivoValido = false;
-        while(!objetivoValido){
-            numObjetivo = v.pedirObjetivo(enemigos) - 1; // Devuelve una posicion adelante
-            if(numObjetivo >= 0 && numObjetivo < enemigos.size()){
-                objetivoValido = true;
+        if(jugador.getVida() > 0){
+            if(!jugador.getEfectoContrario().equals("Aturdir")){
+                int numObjetivo = -1;
+                boolean objetivoValido = false;
+                while(!objetivoValido){
+                    numObjetivo = v.pedirObjetivo(enemigos) - 1; // Devuelve una posicion adelante
+                    if(numObjetivo >= 0 && numObjetivo < enemigos.size()){
+                        objetivoValido = true;
+                    }else{
+                        v.opcionInvalida();
+                    }
+                }
+                Enemigo objetivo = enemigos.get(numObjetivo); 
+                int ataque = jugador.getAtaque();
+                jugador.atacar(objetivo, ataque);
+                v.mostrarRecibioDanio(objetivo, ataque);
+                ultimoTurno += "| " + jugador.getNombre() + " -ATK> " + objetivo.getNombre() + " | ";
+                if(objetivo.getVida() <= 0){ //Se muere
+                    enemigos.remove(numObjetivo);
+                    v.mostrarMuerte(objetivo.getMuerte());
+                    ultimoTurno += "| " + jugador.getNombre() + " -KILL> " + objetivo.getNombre() + " | ";
+                }
             }else{
-                v.opcionInvalida();
+                jugador.setEfectoContrario("");
+                v.mostrarNoMasAturdir();
             }
-        }
-        Enemigo objetivo = enemigos.get(numObjetivo); 
-        int ataque = jugador.getAtaque();
-        jugador.atacar(objetivo, ataque);
-        v.mostrarRecibioDanio(objetivo, ataque);
-        ultimoTurno += "| " + jugador.getNombre() + " -ATK> " + objetivo.getNombre() + " | ";
-        if(objetivo.getVida() <= 0){ //Se muere
-            enemigos.remove(numObjetivo);
-            v.mostrarMuerte(objetivo.getMuerte());
-            ultimoTurno += "| " + jugador.getNombre() + " -KILL> " + objetivo.getNombre() + " | ";
+        }else{
+            v.mostrarDespedida(jugador);
         }
     }
     private void usarItem(){
@@ -91,6 +103,76 @@ public class Controlador {
             }
         }
     }
+    private void atacarEnemigo(Enemigo enemigo){
+        int cantidad = enemigo.getAtaque();
+        if(!jugador.getEfecto().equals("Alas de esquive")){
+            enemigo.atacar(jugador, cantidad);
+            if(jugador.getVida() > 0){
+                ultimoTurno += "| " + enemigo.getNombre() + " -ATK> " + jugador.getNombre() + " | ";
+            }else{
+                ultimoTurno += "| " + enemigo.getNombre() + " -KILL> " + jugador.getNombre() + " | ";
+            }
+            v.mostrarRecibioDanio(jugador, cantidad);
+        }else{
+            ultimoTurno += "| " + enemigo.getNombre() + " -ATKn't>; " + jugador.getNombre() + " -DODGE- "  + " | ";
+            v.mostrarEsquivado();
+            jugador.setEfecto("");
+        }
+    }
+    private void atacarEspecialEnemigo(Enemigo enemigo){
+        String efecto = jugador.getEfectoContrario();
+        if(efecto.equals("")){ //Si no se encuentra ya afectado por una habilidad
+            enemigo.ataqueEspecial(jugador);
+            jugador.bajarVida(enemigo.getAtaque());
+            ultimoTurno += "| " + enemigo.getNombre() + " -SKILL> " + jugador.getNombre() + " | ";
+            turnoAtacadoConHabilidad = turno;
+            v.mostrarEfecto(jugador.checarEfecto());
+            switch(jugador.getEfectoContrario()){ //EFECTOS INMEDIATOS
+                case "Golpe Critico":
+                    jugador.bajarVida(20);
+                    jugador.setEfectoContrario("");
+                    ultimoTurno += "| " + jugador.getNombre() + " -CRIT> " + jugador.getNombre() + " | ";
+                    break;
+                case "Robavida":
+                    enemigo.subirVida(enemigo.getAtaque());
+                    jugador.setEfectoContrario("");
+                    ultimoTurno += "| " + jugador.getNombre() + " -LIFESTEAL> " + jugador.getNombre() + " | ";
+                    break;
+            }
+        }else{
+            v.mostrarYaHayEfecto();
+        }
+    }
+    private void atacarEspecialJefe(Jefe enemigo){
+        String efecto = jugador.getEfectoContrario();
+        if(efecto.equals("")){ //Si no se encuentra ya afectado por una habilidad
+            enemigo.ataqueJefe(jugador);
+            jugador.bajarVida(enemigo.getAtaque());
+            ultimoTurno += "| " + enemigo.getNombre() + " -SKILL> " + jugador.getNombre() + " | ";
+            turnoAtacadoConHabilidad = turno;
+            v.mostrarEfecto(jugador.checarEfecto());
+            switch(jugador.getEfectoContrario()){ //EFECTOS INMEDIATOS
+                /*case "Sangrado":
+                    turnoAtacadoConHabilidad = turno;
+                    jugador.bajarVida(10);
+                    ultimoTurno += "| " + jugador.getNombre() + " -BLED- "  + " | ";
+                    break;*/
+                case "Golpe Critico":
+                    jugador.bajarVida(20);
+                    jugador.setEfectoContrario("");
+                    ultimoTurno += "| " + jugador.getNombre() + " -CRIT> " + jugador.getNombre() + " | ";
+                    break;
+                case "Robavida":
+                    enemigo.subirVida(enemigo.getAtaque());
+                    jugador.setEfectoContrario("");
+                    ultimoTurno += "| " + jugador.getNombre() + " -LIFESTEAL> " + jugador.getNombre() + " | ";
+                    break;
+            }
+        }else{
+            v.mostrarYaHayEfecto();
+        }
+    }
+    int turnoAtacadoConHabilidad = 1;
     private void jugarRonda(){
         ultimoTurno = "";
         v.inicioTurno(turno);
@@ -118,6 +200,7 @@ public class Controlador {
                     }
                 break;
                 case 3: // SALTAR TURNO
+                    ultimoTurno += "| " + jugador.getNombre() + " -SKIP- "  + " | ";
                     v.mostrarSaltarTurno(turno);
                     opcionValida = true;
                 break;
@@ -133,38 +216,70 @@ public class Controlador {
         for (Enemigo enemigo : enemigos) {
             v.mostrarElTurnoDe(enemigo);
             boolean opcionValidaEnemigo = false;
-            while(!opcionValidaEnemigo){
-                int opcion = v.mostrarMenuEnemigo();
-                switch(opcion){
-                    case 1: //Atacar
-                        int cantidad = enemigo.getAtaque();
-                        if(!jugador.getEfecto().equals("Alas de esquive")){
-                            enemigo.atacar(jugador, cantidad);
-                            if(jugador.getVida() > 0){
-                                ultimoTurno += "| " + enemigo.getNombre() + " -ATK> " + jugador.getNombre() + " | ";
-                            }else{
-                                ultimoTurno += "| " + enemigo.getNombre() + " -KILL> " + jugador.getNombre() + " | ";
-                            }
-                            v.mostrarRecibioDanio(jugador, cantidad);
-                        }else{
-                            v.mostrarEsquivado();
-                            jugador.setEfecto("");
-                        }
-                        opcionValidaEnemigo = true;
-                    break;
-                    case 2: //Habilidad
-                    break;
-                    case 3: //Saltar
-                        v.mostrarSaltarTurno(turno);
-                        opcionValidaEnemigo = true;
-                    break;
-                    case 4: //Salir
-                        System.exit(1);
-                    break;
-                    default:
-                        v.opcionInvalida();
-                    break;
+            if(enemigo instanceof Jefe){
+                while(!opcionValidaEnemigo){
+                    int opcion = v.mostrarMenuJefe();
+                    switch(opcion){
+                        case 1: //Atacar
+                            atacarEnemigo(enemigo);
+                            opcionValidaEnemigo = true;
+                        break;
+                        case 2: //Habilidad
+                            atacarEspecialEnemigo(enemigo);
+                            opcionValidaEnemigo = true;
+                        break;
+                        case 3: //ESPECIAL
+                            atacarEspecialJefe((Jefe)enemigo);
+                            opcionValidaEnemigo = true;
+                        break;
+                        case 4: //Saltar
+                            ultimoTurno += "| " + enemigo.getNombre() + " -SKIP- "  + " | ";
+                            v.mostrarSaltarTurno(turno);
+                            opcionValidaEnemigo = true;
+                        break;
+                        case 5: //Salir
+                            System.exit(1);
+                        break;
+                        default:
+                            v.opcionInvalida();
+                        break;
+                    }
                 }
+            }else{
+                while(!opcionValidaEnemigo){
+                    int opcion = v.mostrarMenuEnemigo();
+                    switch(opcion){
+                        case 1: //Atacar
+                            atacarEnemigo(enemigo);
+                            opcionValidaEnemigo = true;
+                        break;
+                        case 2: //Habilidad
+                            atacarEspecialEnemigo(enemigo);
+                            opcionValidaEnemigo = true;
+                        break;
+                        case 3: //Saltar
+                            v.mostrarSaltarTurno(turno);
+                            ultimoTurno += "| " + enemigo.getNombre() + " -SKIP- "  + " | ";
+                            opcionValidaEnemigo = true;
+                        break;
+                        case 4: //Salir
+                            System.exit(1);
+                        break;
+                        default:
+                            v.opcionInvalida();
+                        break;
+                    }
+                }
+            }
+        }
+        //EFECTO EXTRA EN LA RONDA
+        String efecto = jugador.getEfectoContrario();
+        if(efecto.equals("Sangrado")){
+            if(turno < turnoAtacadoConHabilidad + 2){
+                jugador.bajarVida(10);
+                ultimoTurno += "| " + jugador.getNombre() + " -BLED- | ";
+            }else{
+                jugador.setEfectoContrario("");
             }
         }
         //Fin de ronda
@@ -200,7 +315,7 @@ public class Controlador {
                 v.opcionInvalida();
             }
         }
-        jugador = new Jugador(nombre, 150, 15, clase);
+        jugador = new Jugador(nombre, 100, 15, clase);
         v.mostrarPersonajeCreado(nombre);
         crearNuevosEnemigos();
         do{

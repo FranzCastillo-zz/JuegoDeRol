@@ -11,8 +11,7 @@ public class Combatientes {
         this.nombre = nombre;
         this.vida = vida;
         this.ataque = ataque;
-        this.textoSaludo = "Narrador: Un " + this.nombre + " salvaje ha aparecido!" + 
-            "\n-Vida: " + this.vida + "pts\n-Ataque: " + this.ataque + "pts";
+        this.textoSaludo = "Narrador: Un " + this.nombre + " salvaje ha aparecido!";
         this.textoMuerte = "Narrador: Justo donde duele! " + this.nombre + " ha caido!";
 
         this.textoVictoria = this.nombre + ": Ez, como dice la chaviza.";

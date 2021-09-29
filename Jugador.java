@@ -2,23 +2,29 @@ import java.util.ArrayList;
 
 public class Jugador extends Combatientes {
     private String clase;
+    private String efectoContrario;
     private ArrayList<Items> inventario;
     public Jugador(String nombre, int vida, int ataque, String clase){
         super(nombre, vida, ataque);
         this.clase = clase;
         inventario = new ArrayList<>();
         if(clase.equals("GUERRERO")){
-            inventario.add(new Items("Pocion de Curacion"));
+            this.vida = vida * 2; //Doble de vida
+            this.ataque = ataque * 15/10; //50% mas de ataque
             inventario.add(new Items("Doble Ataque"));
             inventario.add(new Items("Doble Ataque"));
             inventario.add(new Items("Alas de esquive"));
         }else{
             inventario.add(new Items("Pocion de Curacion"));
             inventario.add(new Items("Pocion de Curacion"));
+            inventario.add(new Items("Pocion de Curacion"));
+            inventario.add(new Items("Pocion de Curacion"));
+            inventario.add(new Items("Doble Ataque"));
             inventario.add(new Items("Doble Ataque"));
             inventario.add(new Items("Alas de esquive"));
+            inventario.add(new Items("Alas de esquive"));
         }
-        efecto = "";
+        efectoContrario = "";
     }
     public String usarItem(Items item){
         return item.usarItem(this);
@@ -29,5 +35,31 @@ public class Jugador extends Combatientes {
     }
     public String getClase(){
         return this.clase;
+    }
+
+    public String checarEfecto(){
+        String resultado = "";
+        if(this.efectoContrario != null){
+            switch(this.efectoContrario){
+                case "Aturdir":
+                    resultado = this.nombre + " esta aturdido! No podra atacar la siguiente ronda";
+                    break;
+                case "Sangrado":
+                    resultado = this.nombre + " esta sangrando!"; // Pierde 10 de vida el turno actual y el siguiente
+                    break;
+                case "Golpe Critico":
+                    resultado = this.nombre + " ha recibido un golpe critico! (-50 pts de vida)";
+                    break;
+                default:
+                    break;
+            }
+        }
+        return resultado;
+    }
+    public void setEfectoContrario(String nuevoEfecto){
+        this.efectoContrario = nuevoEfecto;
+    }
+    public String getEfectoContrario(){
+        return this.efectoContrario;
     }
 }

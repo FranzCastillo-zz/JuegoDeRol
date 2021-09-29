@@ -36,7 +36,7 @@ public class Vista {
         prnt("Turno " + turno + "!");
     }
     public void enemigosCreados(int cantidad){
-        prnt("Apareceran " + cantidad + " enemigos esta ronda.");
+        prnt("Apareceran " + cantidad + " enemigos esta partida.");
     }
     public void jefeAparece(){
         prnt("*risa malvada*\nNarrador: UN JEFE SE ACERCA PARA LUCHAR.");
@@ -145,5 +145,36 @@ public class Vista {
     }
     public void mostrarItemActivo(){
         prnt("Ya se encuentra un item activo");
+    }
+    public void mostrarEfecto(String resultado){
+        prnt(resultado);
+    }
+    public void mostrarYaHayEfecto(){
+        prnt("El jugador ya tiene un efecto. Escoge otra opcion.");   
+    }
+    public void mostrarNoMasAturdir(){
+        prnt("Estas aturdido! Pierdes este turno");
+    }
+    public int mostrarMenuJefe(){
+        try{
+            prnt("\nQue desea hacer?");
+            prnt("1. Atacar jugador");
+            prnt("2. Atacar jugador con habilidad especial");
+            prnt("3. Atacar con Habilidad de Jefe");
+            prnt("4. Saltar Turno");
+            prnt("5. Salir");
+            int temp = scan.nextInt();
+            scan.nextLine();
+            return temp;
+        }catch(Exception e){
+            scan.next();
+            return -1;
+        }
+    }
+    public void mostrarSaludo(Combatientes c){
+        prnt(c.getSaludo());
+    }
+    public void mostrarDespedida(Combatientes c){
+        prnt(c.getMuerte());
     }
 }
