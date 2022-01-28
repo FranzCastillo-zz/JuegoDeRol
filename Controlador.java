@@ -317,6 +317,55 @@ public class Controlador {
         turno++;
     }
     
+    /*---------------------------------------------------------------------------------
+
+                                        IMPLEMENTACION RAIDS
+
+        -----------------------------------------------------------------------------------
+    */
+
+
+    private Jugador crearJugador(){
+        String nombre = v.pedirNombre();
+        String clase = "";
+        boolean claseValida = false;
+        while(!claseValida){
+            int numeroClase = v.pedirClase();
+            if(numeroClase == 1){
+                clase = "GUERRERO";
+                claseValida = true;
+            }else if(numeroClase == 2){
+                clase = "EXPLORADOR";
+                claseValida = true;
+            }else if(numeroClase == 3){
+                clase = "CAZADOR";
+                claseValida = true;
+            }
+            else{
+                v.opcionInvalida();
+            }
+        }
+        v.mostrarPersonajeCreado(nombre);
+        return new Jugador(nombre, 100, 15, clase);
+    }
+
+    ArrayList<Jugador> jugadoresEnRaid = new ArrayList<>();
+    private void jugarRAID(){
+        //----------------CREANDO JUGADORES-----------------
+        jugadoresEnRaid.add(jugador);
+        boolean cantidadDeJugadoresExtraValidos = false;
+        int cantidadNuevosjugadores = v.pedirCantidadNuevosJugadores();
+        if(cantidadNuevosjugadores >= 0 && cantidadNuevosjugadores <= 2){ //VERIFICA QUE HAYA ENTRE 0 Y 2 JUGADORES PARA CUMPLIR CON MAX 3
+            for(int i = 0; i < cantidadNuevosjugadores; i++){
+                v.mostrarQueJugadorSeEstaCreando(i + 2);
+                jugadoresEnRaid.add(crearJugador());
+            }
+        }
+        //------------------JUGABILIDAD------------------
+    }
+    
+    
+    
     //MAIN PART
     public void ejecutar(){
         historial = new ArrayList<>();
@@ -326,34 +375,31 @@ public class Controlador {
         v = new Vista();
         enemigos = new ArrayList<>();
         v.inicio();
-        String nombre = v.pedirNombre();
-        String clase = "";
-        boolean claseValida = false;
-        while(!claseValida){
-            int numeroClase = v.pedirClase();
-            if(numeroClase == 1){
-                clase = "GUERRERO"; //AGREGAR ITEMS
-                claseValida = true;
-            }else if(numeroClase == 2){
-                clase = "EXPLORADOR";
-                claseValida = true;
+        jugador = crearJugador();
+        boolean tipoRondaValido = false;
+        while(!tipoRondaValido){
+            int tipoRonda = v.pedirTipoRonda();
+            if(tipoRonda == 1){ // ATAQUE NORMAL
+                crearNuevosEnemigos();
+                do{
+                    jugarRonda();
+                    v.mostrarHistorial(historial);
+                }while(jugador.getVida() > 0 && !enemigos.isEmpty());
+    
+                if(jugador.getVida() <= 0){
+                    jugador.getMuerte();
+                }else{
+                    v.mostrarNoMasEnemigos();
+                }
+                v.mostrarGG(turno);
+                tipoRondaValido = true;
+            //------------------------------------------------- RAID -------------------------------------------------
+            }else if(tipoRonda == 2){ 
+                jugarRAID();
+                tipoRondaValido = true;
             }else{
                 v.opcionInvalida();
             }
         }
-        jugador = new Jugador(nombre, 100, 15, clase);
-        v.mostrarPersonajeCreado(nombre);
-        crearNuevosEnemigos();
-        do{
-            jugarRonda();
-            v.mostrarHistorial(historial);
-        }while(jugador.getVida() > 0 && !enemigos.isEmpty());
-
-        if(jugador.getVida() <= 0){
-            jugador.getMuerte();
-        }else{
-            v.mostrarNoMasEnemigos();
-        }
-        v.mostrarGG(turno);
     }
 }

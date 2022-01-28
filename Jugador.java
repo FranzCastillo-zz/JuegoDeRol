@@ -20,7 +20,7 @@ public class Jugador extends Combatientes {
             inventario.add(new Items("Doble Ataque"));
             inventario.add(new Items("Doble Ataque"));
             inventario.add(new Items("Alas de esquive"));
-        }else{
+        }else if(clase.equals("GUERRERO")){
             inventario.add(new Items("Pocion de Curacion"));
             inventario.add(new Items("Pocion de Curacion"));
             inventario.add(new Items("Pocion de Curacion"));
@@ -29,6 +29,13 @@ public class Jugador extends Combatientes {
             inventario.add(new Items("Doble Ataque"));
             inventario.add(new Items("Alas de esquive"));
             inventario.add(new Items("Alas de esquive"));
+        }else{ //CAZADOR
+            this.vida = vida * 7 / 10; //70% MENOS vida
+            this.ataque = ataque * 6 / 10; //60% menos de ataque
+            inventario.add(new Items("Alas de esquive"));
+            inventario.add(new Items("Pocion de Curacion"));
+            inventario.add(new Items("Pocion de Curacion"));
+            //AGREGAR SU ACOMPANIANTE
         }
         efectoContrario = "";
     }

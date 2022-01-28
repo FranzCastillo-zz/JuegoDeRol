@@ -41,7 +41,7 @@ public class Vista {
      * @return int el numero de clase (1. Guerrero | 2. Explorador)
      */
     public int pedirClase(){
-        prnt("Narrador: Ahora dime, que clase prefieres? (Ingresa el numero)\n1. Guerrero\n2. Explorador");
+        prnt("Narrador: Ahora dime, que clase prefieres? (Ingresa el numero)\n1. Guerrero\n2. Explorador\n3. Cazador");
         try{
             int opcion = scan.nextInt();
             scan.nextLine();
@@ -277,5 +277,34 @@ public class Vista {
      */
     public void mostrarDespedida(Combatientes c){
         prnt(c.getMuerte());
+    }
+
+    //-----------------------------------IMPLEMENTACION PARA RAIDS
+    public int pedirTipoRonda(){
+        try{
+            prnt("\nQue tipo de ronda desea jugar? (ingrese el numero)\n");
+            prnt("1. Pelea Normal");
+            prnt("2. RAID!");
+            int temp = scan.nextInt();
+            scan.nextLine();
+            return temp;
+        }catch(Exception e){
+            scan.next();
+            return -1;
+        }
+    }
+    public int pedirCantidadNuevosJugadores(){
+        try{
+            prnt("\nIngrese la cantidad de jugadores extra que le acompaniaran: [0-2] Ingresa el numero");
+            int temp = scan.nextInt();
+            scan.nextLine();
+            return temp;
+        }catch(Exception e){
+            scan.next();
+            return -1;
+        }
+    }
+    public void mostrarQueJugadorSeEstaCreando(int numero){
+        prnt("Sistema: Creando al jugador " + numero);
     }
 }
